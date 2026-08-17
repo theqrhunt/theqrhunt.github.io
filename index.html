@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The QR Hunt (2010 Web 2.0 Edition)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 for retro Web 2.0 icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            font-family: Arial, Tahoma, Verdana, "Trebuchet MS", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        html, body {
+            overscroll-behavior-y: none;
+            background: #111a28 radial-gradient(circle at 50% 20%, #1d3557 0%, #0d1726 70%, #050b12 100%);
+            min-height: 100vh;
+        }
+
+        /* Web 2.0 Diagonal Grid/Pinstripe Overlay */
+        .web20-bg-pattern {
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.03),
+                rgba(255, 255, 255, 0.03) 2px,
+                transparent 2px,
+                transparent 6px
+            );
+        }
+
+        /* Classic 2010 Glossy Header Bar */
+        .web20-header {
+            background: linear-gradient(180deg, #3a75c4 0%, #2b5999 48%, #1c3f73 50%, #0f284e 100%);
+            border-bottom: 2px solid #5a94d6;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.6),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+                0 4px 15px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        /* Glossy Sheen Overlay line for Web 2.0 components */
+        .web20-gloss-overlay {
+            position: relative;
+            overflow: hidden;
+        }
+        .web20-gloss-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 100%);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Skeuomorphic Web 2.0 Card Panel */
+        .web20-panel {
+            background: linear-gradient(180deg, #1e2c3d 0%, #14202e 100%);
+            border: 1px solid #3d5675;
+            border-top-color: #5879a3;
+            border-bottom-color: #0d1724;
+            border-radius: 12px;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.5),
+                0 6px 16px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .web20-panel-inner {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.15) 100%);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        /* Classic Web 2.0 Gel Glossy Button (Blue Aqua) */
+        .web20-btn-blue {
+            background: linear-gradient(180deg, #51a5fd 0%, #2b84eb 48%, #0f68d4 50%, #004fb0 100%);
+            border: 1px solid #00367a;
+            border-radius: 20px;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.7),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+                0 3px 6px rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.7);
+            font-weight: bold;
+            transition: all 0.1s ease;
+        }
+        .web20-btn-blue:active {
+            transform: translateY(1px);
+            background: linear-gradient(180deg, #0d5bbd 0%, #00419e 100%);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Web 2.0 Green Gel Button (Action / Save) */
+        .web20-btn-green {
+            background: linear-gradient(180deg, #95e233 0%, #6ecb17 48%, #50a908 50%, #3a8200 100%);
+            border: 1px solid #285a00;
+            border-radius: 20px;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+                0 3px 6px rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
+            font-weight: bold;
+        }
+        .web20-btn-green:active {
+            transform: translateY(1px);
+            background: linear-gradient(180deg, #4c9906 0%, #306800 100%);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Web 2.0 Silver / Gray Metallic Button */
+        .web20-btn-silver {
+            background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 48%, #cecece 50%, #b0b0b0 100%);
+            border: 1px solid #737373;
+            border-radius: 16px;
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.2),
+                0 2px 5px rgba(0, 0, 0, 0.3);
+            color: #222222;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+        .web20-btn-silver:active {
+            transform: translateY(1px);
+            background: linear-gradient(180deg, #b0b0b0 0%, #e0e0e0 100%);
+        }
+
+        /* Classic Web 2.0 Badge / Tag */
+        .web20-badge-orange {
+            background: linear-gradient(180deg, #ffb338 0%, #ff8c00 50%, #e06c00 100%);
+            border: 1px solid #a34700;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0,0,0,0.3);
+            color: #ffffff;
+            text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.6);
+        }
+
+        .web20-badge-beta {
+            background: linear-gradient(180deg, #ff4141 0%, #cc0000 100%);
+            border: 1px solid #7f0000;
+            color: #ffffff;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+            font-weight: 900;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Inset Web 2.0 Text Box */
+        .web20-input {
+            background: linear-gradient(180deg, #0b121c 0%, #141f2e 100%);
+            border: 1px solid #304763;
+            border-bottom-color: #51719c;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.1);
+            font-size: 16px !important; /* Prevents auto-zoom on mobile focus */
+        }
+
+        /* 2010 Aero Window Dialog Frame */
+        .web20-dialog {
+            background: linear-gradient(180deg, #2a3c52 0%, #1a2738 100%);
+            border: 2px solid #5a7d9a;
+            border-radius: 12px;
+            box-shadow: 
+                0 0 0 1px rgba(0,0,0,0.8),
+                0 20px 40px rgba(0,0,0,0.8),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+
+        .web20-dialog-header {
+            background: linear-gradient(180deg, #4a77a5 0%, #2c517a 100%);
+            border-bottom: 1px solid #1e3652;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        /* List Items Skeuomorphism */
+        .web20-item-card {
+            background: linear-gradient(180deg, #223347 0%, #172433 100%);
+            border: 1px solid #354e6b;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Refresh icon smooth rotation */
+        .spin-rotate {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+
+        /* Loop Shimmer Effect for #1 The First Finder */
+        .web20-shimmer-card {
+            position: relative;
+            overflow: hidden;
+            border-color: rgba(250, 204, 21, 0.9) !important;
+            box-shadow: 
+                0 0 14px rgba(234, 179, 8, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35),
+                0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .web20-shimmer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -120%;
+            width: 80%;
+            height: 200%;
+            background: linear-gradient(
+                115deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0) 25%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0) 75%,
+                transparent 100%
+            );
+            transform: rotate(20deg);
+            animation: loopShimmer 2.8s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes loopShimmer {
+            0% {
+                left: -120%;
+            }
+            60%, 100% {
+                left: 180%;
+            }
+        }
+
+        /* Standard custom scrollbar removal */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="web20-bg-pattern text-gray-100 min-h-screen flex flex-col items-center justify-between antialiased relative">
+
+    <!-- Mobile Container (Classic Web 2.0 WebApp Frame) -->
+    <div class="w-full max-w-md min-h-screen flex flex-col justify-between relative z-10 pb-8">
+        
+        <!-- 2010 Web 2.0 Glossy Blue Header Bar -->
+        <header class="sticky top-0 z-30 web20-header web20-gloss-overlay px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <!-- Glossy Icon Box -->
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-b from-cyan-300 to-blue-700 border border-white/60 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-qrcode text-white text-lg drop-shadow"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black tracking-wide text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+                        The QR Hunt
+                    </h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Scroll Area -->
+        <main class="flex-1 px-3.5 py-4 space-y-4 overflow-y-auto no-scrollbar">
+            
+            <!-- Hero Web 2.0 Glossy Panel -->
+            <div class="web20-panel web20-gloss-overlay p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="space-y-1 max-w-[65%]">
+                        <span class="inline-block px-2.5 py-0.5 rounded-full web20-badge-orange text-[10px] font-bold tracking-wider uppercase">
+                            Scavenger Game
+                        </span>
+                        <h2 class="text-lg font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                            Find. Scan. Drop.
+                        </h2>
+                        <p class="text-[11px] text-gray-300 leading-snug">
+                            Scan the physical QR code, record your tag, then hide it in a brand new spot!
+                        </p>
+                    </div>
+
+                    <!-- Web 2.0 Glassy QR Icon Box -->
+                    <div class="w-18 h-18 p-3 rounded-xl bg-gradient-to-b from-blue-400 via-blue-600 to-indigo-900 border-2 border-blue-200/80 shadow-[0_4px_10px_rgba(0,0,0,0.5)] flex items-center justify-center relative overflow-hidden">
+                        <i class="fa-solid fa-qrcode text-4xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"></i>
+                        <div class="absolute inset-x-0 top-0 h-1/2 bg-white/30 rounded-t-lg pointer-events-none"></div>
+                    </div>
+                </div>
+
+                <!-- Stats Bar (2010 Skeuomorphic Counters) -->
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-gray-600/50">
+                    <div class="web20-panel-inner p-2.5 text-center">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Finders</span>
+                        <span id="statTotalFinders" class="text-lg font-black text-yellow-400 drop-shadow mt-0.5 block">0</span>
+                    </div>
+                    <div class="web20-panel-inner p-2.5 text-center">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Latest Activity</span>
+                        <span id="statLatestScan" class="text-xs font-bold text-cyan-300 truncate block mt-0.5">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finders List Section -->
+            <section class="space-y-2.5">
+                <div class="flex items-center justify-between px-1">
+                    <div class="flex items-center space-x-1.5">
+                        <i class="fa-solid fa-list-ol text-cyan-400 text-xs"></i>
+                        <h3 class="font-bold text-xs text-gray-300 uppercase tracking-wider">Hall of Finders</h3>
+                    </div>
+                    <button id="refreshBtn" onclick="fetchFindersList()" class="web20-btn-silver text-xs px-3 py-1 rounded-full flex items-center space-x-1 active:scale-95 transition-transform">
+                        <i id="refreshIcon" class="fa-solid fa-rotate-right text-[10px] spin-rotate"></i>
+                        <span class="font-bold">Refresh</span>
+                    </button>
+                </div>
+
+                <!-- Finders Items List -->
+                <div id="findersListContainer" class="space-y-2">
+                    <!-- Web 2.0 Loader Skeleton -->
+                    <div class="animate-pulse space-y-2">
+                        <div class="h-14 web20-item-card rounded-lg"></div>
+                        <div class="h-14 web20-item-card rounded-lg"></div>
+                        <div class="h-14 web20-item-card rounded-lg"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center py-3 text-xs text-gray-400 border-t border-gray-800 font-medium">
+            <p>If you found it, drop it somewhere else</p>
+        </footer>
+    </div>
+
+    <!-- Modal Step 1: Scan Notification Dialog (2010 Aero Popup Window) -->
+    <div id="modalStep1" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden">
+        <div class="w-full max-w-xs web20-dialog overflow-hidden animate-bounce-in shadow-2xl">
+            <!-- Dialog Header Bar -->
+            <div class="web20-dialog-header px-3.5 py-2 flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center space-x-1.5 drop-shadow">
+                    <i class="fa-solid fa-circle-check text-green-400"></i>
+                    <span>QR Code Located!</span>
+                </span>
+                <span class="w-3 h-3 rounded-full bg-red-500 border border-red-200"></span>
+            </div>
+
+            <div class="p-5 text-center space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-b from-green-400 to-green-700 border-2 border-green-200 shadow-lg flex items-center justify-center text-white text-3xl">
+                    <i class="fa-solid fa-trophy drop-shadow"></i>
+                </div>
+
+                <div class="space-y-1.5">
+                    <h3 class="text-base font-black text-white drop-shadow">You Scanned It! 🎉</h3>
+                    <p class="text-xs text-gray-200 leading-relaxed">
+                        Now re-hide the QR code in a new secret location for the next hunter to discover!
+                    </p>
+                </div>
+
+                <button id="modalContinueBtn" onclick="goToStep2()" class="w-full py-3 web20-btn-green rounded-full text-sm font-black uppercase tracking-wider flex items-center justify-center space-x-2">
+                    <span>Continue</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Step 2: Nickname Input Dialog -->
+    <div id="modalStep2" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden">
+        <div class="w-full max-w-xs web20-dialog overflow-hidden shadow-2xl">
+            <div class="web20-dialog-header px-3.5 py-2 flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center space-x-1.5 drop-shadow">
+                    <i class="fa-solid fa-id-badge text-yellow-300"></i>
+                    <span>Finder Registration</span>
+                </span>
+                <span class="w-3 h-3 rounded-full bg-red-500 border border-red-200"></span>
+            </div>
+
+            <div class="p-5 text-center space-y-4">
+                <div class="space-y-1">
+                    <h3 class="text-base font-black text-white drop-shadow">Join Finders List</h3>
+                    <p class="text-xs text-gray-300">Enter a nickname to record your victory!</p>
+                </div>
+
+                <div class="space-y-2 text-left">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="nicknameInput" 
+                            maxlength="30"
+                            placeholder="Enter nickname..."
+                            class="w-full web20-input rounded-lg px-3.5 py-2.5 text-base text-white placeholder-gray-400 outline-none font-bold pr-14"
+                            oninput="updateCharCount(this)"
+                        />
+                        <span id="charCount" class="absolute right-3 top-3 text-[10px] text-cyan-400 font-mono">0/30</span>
+                    </div>
+
+                    <div id="modalError" class="hidden text-red-400 text-xs font-bold flex items-center space-x-1">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="modalErrorMsg">Please enter a valid nickname.</span>
+                    </div>
+                </div>
+
+                <button id="saveNicknameBtn" onclick="saveNickname()" class="w-full py-3 web20-btn-blue rounded-full text-sm font-black uppercase tracking-wider flex items-center justify-center space-x-2">
+                    <span id="saveBtnText">Save Tag</span>
+                    <i id="saveBtnSpinner" class="fa-solid fa-spinner fa-spin hidden text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Web 2.0 Toast Notification Bar -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 web20-dialog px-4 py-2 text-xs font-bold text-white flex items-center space-x-2 transition-all duration-300 opacity-0 pointer-events-none -translate-y-4 shadow-2xl">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="toastMsg">Action successful!</span>
+    </div>
+
+    <script>
+        // Supabase Database Credentials
+        const SUPABASE_URL = "https://tiqznfnxylxeykpmolco.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpcXpuZm54eWx4ZXlrcG1vbGNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjkwMjI4NCwiZXhwIjoyMTAyNDc4Mjg0fQ.mVi90ei_xX9VMX6YKyMWwUMHTkCNrHb-xpUKUJxU3AM";
+        
+        let findersData = [];
+        let currentRotation = 0;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Prevent double-tap zoom
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) e.preventDefault();
+            }, { passive: false });
+
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(e) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) e.preventDefault();
+                lastTouchEnd = now;
+            }, false);
+
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasQrParam = urlParams.get('qr') === 'true' || urlParams.has('qr');
+            const isSaved = localStorage.getItem('saved') === 'True';
+
+            if (hasQrParam && !isSaved) {
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+                showStep1Modal();
+            }
+
+            // Fetch initial finders list
+            await fetchFindersList();
+
+            // Real-time timer update interval (every 3 seconds)
+            setInterval(() => {
+                if (findersData.length > 0) renderFindersListUI(findersData);
+            }, 3000);
+        });
+
+        // Supabase REST Fetch Function
+        async function fetchFindersList() {
+            const container = document.getElementById('findersListContainer');
+            const refreshIcon = document.getElementById('refreshIcon');
+            
+            if (refreshIcon) {
+                currentRotation += 360;
+                refreshIcon.style.transform = `rotate(${currentRotation}deg)`;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/qrhunt?select=*&order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+
+                if (response.ok) {
+                    findersData = await response.json();
+                    renderFindersListUI(findersData);
+                    updateStats(findersData);
+                } else {
+                    console.error("Supabase REST Fetch Error");
+                    container.innerHTML = `
+                        <div class="web20-panel p-4 text-center rounded-lg">
+                            <p class="text-xs text-yellow-300 font-bold">⚠️ Connection issue with database.</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error("Fetch Exception:", err);
+            }
+        }
+
+        // Render Finders List
+        function renderFindersListUI(list) {
+            const container = document.getElementById('findersListContainer');
+            if (!container) return;
+
+            if (!list || list.length === 0) {
+                container.innerHTML = `
+                    <div class="web20-panel p-6 text-center space-y-2 rounded-xl">
+                        <i class="fa-solid fa-compass text-2xl text-cyan-400"></i>
+                        <p class="text-xs text-white font-bold">No finders yet!</p>
+                        <p class="text-[11px] text-gray-400">Be the first hunter to scan the QR code!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalCount = list.length;
+
+            const html = list.map((item, index) => {
+                const finderRankNumber = totalCount - index;
+                const timeAgoText = formatTimeAgo(item.created_at);
+                const safeName = escapeHtml(item.name || "Anonymous Hunter");
+
+                let rankBadge = `<span class="font-mono text-xs font-bold text-gray-300">#${finderRankNumber}</span>`;
+                let borderHighlight = "border-gray-600/60";
+                let shimmerClass = "";
+
+                if (finderRankNumber === 1) {
+                    rankBadge = `<span class="px-2 py-0.5 rounded web20-badge-orange text-[9px] font-black">#1 THE FIRST</span>`;
+                    borderHighlight = "border-yellow-400/80";
+                    shimmerClass = "web20-shimmer-card";
+                } else if (index === 0) {
+                    rankBadge = `<span class="px-2 py-0.5 rounded bg-blue-600 border border-blue-300 text-white text-[9px] font-black">LATEST (#${finderRankNumber})</span>`;
+                    borderHighlight = "border-blue-400";
+                }
+
+                return `
+                    <div class="web20-item-card p-3 rounded-lg border ${borderHighlight} ${shimmerClass} flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-b from-blue-400 to-blue-800 border border-blue-200 flex items-center justify-center shrink-0 shadow">
+                                <i class="fa-solid fa-user-check text-xs text-white"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="font-bold text-xs text-white truncate block">${safeName}</span>
+                                <span class="text-[10px] text-gray-400 flex items-center space-x-1 mt-0.5">
+                                    <i class="fa-regular fa-clock text-[9px]"></i>
+                                    <span>${timeAgoText}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="shrink-0 ml-2">
+                            ${rankBadge}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function updateStats(list) {
+            const totalElem = document.getElementById('statTotalFinders');
+            const latestElem = document.getElementById('statLatestScan');
+
+            if (totalElem) totalElem.textContent = list.length;
+            if (latestElem) {
+                latestElem.textContent = list.length > 0 ? formatTimeAgo(list[0].created_at) : "None yet";
+            }
+        }
+
+        // Relative time formatting
+        function formatTimeAgo(timestamp) {
+            if (!timestamp) return 'just now';
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffInSeconds = Math.floor((now - past) / 1000);
+
+            if (diffInSeconds < 5) return 'just now';
+            if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+            
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            if (diffInMinutes < 60) return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`;
+            
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+            
+            const diffInDays = Math.floor(diffInHours / 24);
+            if (diffInDays < 30) return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+            
+            const diffInMonths = Math.floor(diffInDays / 30);
+            if (diffInMonths < 12) return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
+            
+            const diffInYears = Math.floor(diffInDays / 365);
+            return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
+        }
+
+        // Modal Navigation Logic
+        function showStep1Modal() {
+            document.getElementById('modalStep1').classList.remove('hidden');
+        }
+
+        function goToStep2() {
+            document.getElementById('modalStep1').classList.add('hidden');
+            document.getElementById('modalStep2').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('nicknameInput')?.focus();
+            }, 100);
+        }
+
+        function updateCharCount(input) {
+            const countElem = document.getElementById('charCount');
+            if (countElem) countElem.textContent = `${input.value.length}/30`;
+            document.getElementById('modalError').classList.add('hidden');
+        }
+
+        // Save Nickname to Supabase
+        async function saveNickname() {
+            const input = document.getElementById('nicknameInput');
+            const nickname = input ? input.value.trim() : '';
+            const errorContainer = document.getElementById('modalError');
+            const errorMsg = document.getElementById('modalErrorMsg');
+            const saveBtnText = document.getElementById('saveBtnText');
+            const saveBtnSpinner = document.getElementById('saveBtnSpinner');
+            const saveBtn = document.getElementById('saveNicknameBtn');
+
+            if (!nickname) {
+                errorMsg.textContent = 'Please enter a nickname first.';
+                errorContainer.classList.remove('hidden');
+                return;
+            }
+
+            if (nickname.length > 30) {
+                errorMsg.textContent = 'Nickname must be 30 characters or less.';
+                errorContainer.classList.remove('hidden');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtnText.textContent = 'Saving...';
+            saveBtnSpinner.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/qrhunt`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({ name: nickname })
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('saved', 'True');
+                    document.getElementById('modalStep2').classList.add('hidden');
+                    showToast(`Registered Finder: ${nickname}!`);
+                    await fetchFindersList();
+                } else {
+                    errorMsg.textContent = 'Save error. Please retry.';
+                    errorContainer.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Save Error:", err);
+                errorMsg.textContent = 'Network error. Please try again.';
+                errorContainer.classList.remove('hidden');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtnText.textContent = 'Save Tag';
+                saveBtnSpinner.classList.add('hidden');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            if (toast && toastMsg) {
+                toastMsg.textContent = message;
+                toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
+                toast.classList.add('opacity-100', 'translate-y-0');
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 3500);
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+    </script>
+</body>
+</html>
