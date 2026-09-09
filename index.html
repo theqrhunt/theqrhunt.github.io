@@ -112,7 +112,7 @@
                 <div>
                     <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
                         The QR Hunt
-                        
+                        <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">NIGHT MODE</span>
                     </h1>
                 </div>
             </div>
@@ -442,8 +442,38 @@
             return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
         }
 
+        function lockScroll() {
+            document.body.classList.add('overflow-hidden');
+            const mainEl = document.querySelector('main');
+            if (mainEl) mainEl.classList.add('overflow-hidden');
+            document.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
+        }
+
+        function unlockScroll() {
+            document.body.classList.remove('overflow-hidden');
+            const mainEl = document.querySelector('main');
+            if (mainEl) mainEl.classList.remove('overflow-hidden');
+            document.removeEventListener('touchmove', preventBackgroundScroll);
+        }
+
+        function preventBackgroundScroll(e) {
+            const m1 = document.getElementById('modalStep1');
+            const m2 = document.getElementById('modalStep2');
+            const isM1Visible = m1 && !m1.classList.contains('hidden');
+            const isM2Visible = m2 && !m2.classList.contains('hidden');
+
+            if (isM1Visible || isM2Visible) {
+                const activeModal = isM1Visible ? m1 : m2;
+                const card = activeModal.querySelector('.night-card');
+                if (!card || !card.contains(e.target)) {
+                    e.preventDefault();
+                }
+            }
+        }
+
         // Modal Navigation Logic
         function showStep1Modal() {
+            lockScroll();
             document.getElementById('modalStep1').classList.remove('hidden');
         }
 
@@ -502,6 +532,7 @@
                 if (response.ok) {
                     localStorage.setItem('saved', 'True');
                     document.getElementById('modalStep2').classList.add('hidden');
+                    unlockScroll();
                     showToast(`Registered Finder: ${nickname}!`);
                     await fetchFindersList();
                 } else {
